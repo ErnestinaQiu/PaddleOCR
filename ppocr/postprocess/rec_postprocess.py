@@ -226,7 +226,6 @@ class CTCLabelDecode(BaseRecLabelDecode):
 
 class DistillationCTCLabelDecode(CTCLabelDecode):
     """
-    Convert
     Convert between text-label and text-index
     """
 

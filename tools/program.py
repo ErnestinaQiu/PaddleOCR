@@ -33,7 +33,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 from ppocr.utils.stats import TrainingStats
 from ppocr.utils.save_load import save_model
-from ppocr.utils.utility import print_dict, AverageMeter
+from ppocr.utils.utility import print_dict, AverageMeter, transform_char_dict
 from ppocr.utils.logging import get_logger
 from ppocr.utils.loggers import WandbLogger, Loggers
 from ppocr.utils import profiler
@@ -199,6 +199,29 @@ def train(
     amp_custom_white_list=[],
     amp_dtype="float16",
 ):
+    """entry of all the training task
+
+    Args:
+        config (dict): the train_config.yml
+        train_dataloader (_type_): _description_
+        valid_dataloader (_type_): _description_
+        device (_type_): _description_
+        model (_type_): _description_
+        loss_class (_type_): _description_
+        optimizer (_type_): _description_
+        lr_scheduler (_type_): _description_
+        post_process_class (_type_): _description_
+        eval_class (_type_): _description_
+        pre_best_model_dict (_type_): _description_
+        logger (_type_): _description_
+        step_pre_epoch (_type_): _description_
+        log_writer (_type_, optional): _description_. Defaults to None.
+        scaler (_type_, optional): _description_. Defaults to None.
+        amp_level (str, optional): _description_. Defaults to "O2".
+        amp_custom_black_list (list, optional): _description_. Defaults to [].
+        amp_custom_white_list (list, optional): _description_. Defaults to [].
+        amp_dtype (str, optional): _description_. Defaults to "float16".
+    """
     cal_metric_during_train = config["Global"].get("cal_metric_during_train", False)
     calc_epoch_interval = config["Global"].get("calc_epoch_interval", 1)
     log_smooth_window = config["Global"]["log_smooth_window"]
@@ -334,6 +357,11 @@ def train(
                         preds = model(batch)
                     else:
                         preds = model(images)
+
+                ###############################################################################
+                # TODOS: add transformation into students model of key_dicts of teacher model #
+                ###############################################################################
+
                 preds = to_float32(preds)
                 loss = loss_class(preds, batch)
                 avg_loss = loss["loss"]
@@ -349,12 +377,28 @@ def train(
                     preds = model(batch[:3])
                 elif algorithm in ["LaTeXOCR"]:
                     preds = model(batch)
+                elif algorithm in ['Distillation']:
+                    preds = model(images)
+                    if config['Global']['character_dict_path'] != config['Architecture']['Models']['Teacher']['character_dict_path'] \
+                        or config['Global']['character_dict_path'] != config['Architecture']['Models']['Student']['character_dict_path']:                
+                        for key in preds.keys():
+                            #########################################################################################
+                            # TODOS: figure out the data structure of the pred here and design the transformer func #
+                            #########################################################################################
+                            if key == 'Teacher':
+                                pred = preds[key]
+                                # transform_char_dict not implement yet
+                                new_pred = transform_char_dict(pred)
+                                preds[key] = new_pred
                 else:
                     preds = model(images)
                 loss = loss_class(preds, batch)
                 avg_loss = loss["loss"]
                 avg_loss.backward()
                 optimizer.step()
+
+            # with open("./output/preds.txt", 'w', encoding='utf8') as f:
+            #     f.write(str(preds))
 
             optimizer.clear_grad()
 

@@ -62,6 +62,15 @@ from .rec_postprocess import CANLabelDecode
 
 
 def build_post_process(config, global_config=None):
+    """_summary_
+
+    Args:
+        config (dict|config.yml): config["PostProcess"]
+        global_config (dict, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
     support_dict = [
         "DBPostProcess",
         "EASTPostProcess",
@@ -114,5 +123,6 @@ def build_post_process(config, global_config=None):
     assert module_name in support_dict, Exception(
         "post process only support {}".format(support_dict)
     )
+    # execute the import module from .rec_postprocess
     module_class = eval(module_name)(**config)
     return module_class

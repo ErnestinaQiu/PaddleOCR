@@ -25,6 +25,14 @@ __all__ = ["build_model", "apply_to_static"]
 
 
 def build_model(config):
+    """build model according to config
+
+    Args:
+        config (dict): config["Architecture"]
+
+    Returns:
+        _type_: _description_
+    """
     config = copy.deepcopy(config)
     if not "name" in config:
         arch = BaseModel(config)

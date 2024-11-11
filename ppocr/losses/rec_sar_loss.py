@@ -15,9 +15,10 @@ class SARLoss(nn.Layer):
         )
 
     def forward(self, predicts, batch):
+        # wenyu note: the following two lines maybe because the training of SAR decoder need the "START" and "END" token
         predict = predicts[
             :, :-1, :
-        ]  # ignore last index of outputs to be in same seq_len with targets
+        ]  # ignore last index of outputs to be in same seq_len with targets. 
         label = batch[1].astype("int64")[
             :, 1:
         ]  # ignore first index of target in loss calculation

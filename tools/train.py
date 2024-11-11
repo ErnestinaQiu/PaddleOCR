@@ -136,7 +136,7 @@ def main(config, device, logger, vdl_writer, seed):
         if config["PostProcess"]["name"] == "SARLabelDecode":  # for SAR model
             config["Loss"]["ignore_index"] = char_num - 1
 
-    model = build_model(config["Architecture"])
+    model = build_model(config["Architecture"])  # may be baseModel or DistillationModel, in DistillationModel there are model_name_list and model_list
 
     use_sync_bn = config["Global"].get("use_sync_bn", False)
     if use_sync_bn:
@@ -149,7 +149,7 @@ def main(config, device, logger, vdl_writer, seed):
     model = apply_to_static(model, config, logger)
 
     # build loss
-    loss_class = build_loss(config["Loss"])
+    loss_class = build_loss(config['Loss'])
 
     # build optim
     optimizer, lr_scheduler = build_optimizer(

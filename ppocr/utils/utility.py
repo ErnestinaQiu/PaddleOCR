@@ -21,6 +21,7 @@ import paddle
 import importlib.util
 import sys
 import subprocess
+from paddle import tensor
 
 
 def print_dict(d, logger, delimiter=0):
@@ -214,3 +215,50 @@ class AverageMeter:
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
+
+
+def get_char_dict(char_path):
+    """_summary_
+
+    Args:
+        char_path (str): _description_
+
+    Returns:
+        dict: {'char': int(index)}
+    """
+    with open(char_path, 'r', encoding='utf8') as f:
+        origin_char_lines = f.readlines()
+    char_dict = dict()
+    for i in range(len(origin_char_lines)):
+        line = origin_char_lines[i].replace("\n", "")
+        char_dict[line] = i
+    return char_dict
+
+
+def transform_char_dict(pred: dict, model_name: str, layer_name: str, origin_char_path: str, new_char_path: str):
+    """_summary_
+
+    Args:
+        pred (dict): _description_
+        model_name (str): _description_
+        layer_name (str): _description_
+        origin_char_path (str): _description_
+        new_char_path (str): _description_
+
+    Returns:
+        dict: the pred whose pred[model_name][layer_name] is transformed according to origin_char_path and new_char_path
+    """
+    origin_char_dict = get_char_dict(char_path=origin_char_path)
+    new_char_dict = get_char_dict(char_path=new_char_path)
+    map_dict = dict()   # {old_char_dict_ind: new_char_dict_ind}
+    for key in origin_char_dict.keys():
+        map_dict[origin_char_dict[key]] = new_char_dict[key]
+
+    target_tensor = pred[model_name][layer_name]
+    new_tensor = 
+    for i in range(target_tensor.shape[0]):
+        for j in range(target_tensor.shape[1]):
+            target_tensor[]
+
+    return new_pred
+

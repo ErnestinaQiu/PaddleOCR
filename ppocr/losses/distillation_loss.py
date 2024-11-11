@@ -43,8 +43,6 @@ def _sum_loss(loss_dict):
 
 
 class DistillationDMLLoss(DMLLoss):
-    """ """
-
     def __init__(
         self,
         model_name_pairs=[],
