@@ -355,17 +355,12 @@ def train(
                         preds = model(batch[:3])
                     elif algorithm in ["LaTeXOCR"]:
                         preds = model(batch)
-                    elif algorithm in ['Distillation']:
-                        preds = model(images)
-                        if config['Global']['character_dict_path'] != config['Architecture']['Models']['Teacher']['character_dict_path'] \
-                            or config['Global']['character_dict_path'] != config['Architecture']['Models']['Student']['character_dict_path']:                
-                            for key in preds.keys():
-                                if key == 'Teacher':
-                                    pred = preds[key]
-                                    new_pred = transform_char_dict(pred, model_name=key, layer_name='head_out', origin_char_path=config['Architecture']['Models']['Teacher']['character_dict_path'], new_char_path=config['Global']['character_dict_path'])
-                                    preds[key] = new_pred
                     else:
                         preds = model(images)
+
+                ###############################################################################
+                # TODOS: add transformation into students model of key_dicts of teacher model #
+                ###############################################################################
 
                 preds = to_float32(preds)
                 loss = loss_class(preds, batch)
@@ -387,9 +382,13 @@ def train(
                     if config['Global']['character_dict_path'] != config['Architecture']['Models']['Teacher']['character_dict_path'] \
                         or config['Global']['character_dict_path'] != config['Architecture']['Models']['Student']['character_dict_path']:                
                         for key in preds.keys():
+                            #########################################################################################
+                            # TODOS: figure out the data structure of the pred here and design the transformer func #
+                            #########################################################################################
                             if key == 'Teacher':
                                 pred = preds[key]
-                                new_pred = transform_char_dict(pred, model_name=key, layer_name='head_out', origin_char_path=config['Architecture']['Models']['Teacher']['character_dict_path'], new_char_path=config['Global']['character_dict_path'])
+                                # transform_char_dict not implement yet
+                                new_pred = transform_char_dict(pred)
                                 preds[key] = new_pred
                 else:
                     preds = model(images)

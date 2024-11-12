@@ -21,7 +21,7 @@ import paddle
 import importlib.util
 import sys
 import subprocess
-from copy import deepcopy
+from paddle import tensor
 
 
 def print_dict(d, logger, delimiter=0):
@@ -250,19 +250,15 @@ def transform_char_dict(pred: dict, model_name: str, layer_name: str, origin_cha
     """
     origin_char_dict = get_char_dict(char_path=origin_char_path)
     new_char_dict = get_char_dict(char_path=new_char_path)
-    map_dict = dict()   # {new_char_dict_ind: old_char_dict_ind}
+    map_dict = dict()   # {old_char_dict_ind: new_char_dict_ind}
     for key in origin_char_dict.keys():
-        map_dict[new_char_dict[key]] = origin_char_dict[key]
+        map_dict[origin_char_dict[key]] = new_char_dict[key]
 
     target_tensor = pred[model_name][layer_name]
-
+    new_tensor = 
     for i in range(target_tensor.shape[0]):
         for j in range(target_tensor.shape[1]):
-            new_tensor = paddle.zeros(shape=(len(new_char_dict),), dtype='float32')
-            for k in range(len(new_char_dict)):
-                old_idx = map_dict[k]
-                new_tensor[k] = target_tensor[i, j, old_idx]
-            target_tensor[i, j] = new_tensor
-    pred[model_name][layer_name] = target_tensor
+            target_tensor[]
 
-    return pred
+    return new_pred
+
