@@ -51,7 +51,7 @@ def get_logger(name="ppocr", log_file=None, log_level=logging.DEBUG, log_ranks="
             return logger
 
     formatter = logging.Formatter(
-        "[%(asctime)s] %(name)s %(levelname)s: %(message)s", datefmt="%Y/%m/%d %H:%M:%S"
+        "[%(asctime)s] %(name)s %(levelname)s %(filename)s %(lineno)d: %(message)s", datefmt="%Y/%m/%d %H:%M:%S"
     )
 
     stream_handler = logging.StreamHandler(stream=sys.stdout)

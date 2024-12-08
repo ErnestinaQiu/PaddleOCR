@@ -16,6 +16,14 @@ __all__ = ["build_head"]
 
 
 def build_head(config):
+    """_summary_
+
+    Args:
+        config (dict): config["Architecture"]["Models"][key]["Head"]
+
+    Returns:
+        _type_: _description_
+    """
     # det head
     from .det_db_head import DBHead, PFHeadLocal
     from .det_east_head import EASTHead

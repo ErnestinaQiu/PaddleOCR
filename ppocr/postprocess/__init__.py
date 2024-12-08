@@ -43,6 +43,7 @@ from .rec_postprocess import (
     ParseQLabelDecode,
     CPPDLabelDecode,
     LaTeXOCRDecode,
+    MixTexDecode,
 )
 from .cls_postprocess import ClsPostProcess
 from .pg_postprocess import PGPostProcess
@@ -98,6 +99,7 @@ def build_post_process(config, global_config=None):
         "ParseQLabelDecode",
         "CPPDLabelDecode",
         "LaTeXOCRDecode",
+        "MixTexOCRDecode",
     ]
 
     if config["name"] == "PSEPostProcess":

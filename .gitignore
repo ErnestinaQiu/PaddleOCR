@@ -32,3 +32,7 @@ paddleocr.egg-info/
 /deploy/android_demo/app/cache/
 test_tipc/web/models/
 test_tipc/web/node_modules/
+/trdg
+*.zip
+ppocr/utils/ch_en_3500_94_8.txt
+ppocr/utils/logging.py

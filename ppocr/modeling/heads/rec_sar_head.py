@@ -86,8 +86,8 @@ class SAREncoder(nn.Layer):
 
     def forward(self, feat, img_metas=None):
         if img_metas is not None:
-            assert len(img_metas[0]) == feat.shape[0]
-
+            assert len(img_metas[0]) == feat.shape[0], f'img_metas: {img_metas}, feat.shape: {feat.shape}'
+            
         valid_ratios = None
         if img_metas is not None and self.mask:
             valid_ratios = img_metas[-1]

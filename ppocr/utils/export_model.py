@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,7 +98,7 @@ def dump_infer_config(config, path, logger):
 
     infer_cfg["PostProcess"] = postprocess
 
-    with open(path, "w") as f:
+    with open(path, "w", encoding='utf8') as f:
         yaml.dump(
             infer_cfg, f, default_flow_style=False, encoding="utf-8", allow_unicode=True
         )
@@ -352,7 +354,7 @@ def export(config, base_model=None, save_path=None):
         arch_config["algorithm"] in ["SVTR", "CPPD"]
         and arch_config["Head"]["name"] != "MultiHead"
     ):
-        input_shape = config["Eval"]["dataset"]["transforms"][-2]["SVTRRecResizeImg"][
+        input_shape = config["Eval"]["dataset"]["transforms"][-2]["RecResizeImg"][
             "image_shape"
         ]
     elif arch_config["algorithm"].lower() == "ABINet".lower():

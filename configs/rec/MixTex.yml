@@ -1,0 +1,112 @@
+Global:
+  use_gpu: True
+  epoch_num: 5
+  log_smooth_window: 20     # for logging metrics during training procedure
+  print_batch_step: 10
+  save_model_dir: ./output/MixTex
+  save_epoch_step: 5
+  max_seq_len: 512
+  # evaluation is run every 60000 iterations (22 epoch)(batch_size = 56)
+  eval_batch_step: [0, 5]
+  cal_metric_during_train: true
+  pretrained_model: https://paddle-imagenet-models-name.bj.bcebos.com/dygraph/legendary_models/SwinTransformer_tiny_patch4_window7_224_pretrained.pdparams
+  checkpoints:
+  save_inference_dir:
+  use_visualdl: false
+  infer_img: doc/datasets/pme_demo/0000013.png
+  infer_mode: False
+  use_space_char: False
+  rec_char_dict_path:  ppocr/utils/dict/mixtex_tokenizer.json
+  save_res_path: ./output/rec/predicts_mixtex.txt
+
+Optimizer:
+  name: AdamW
+  beta1: 0.9
+  beta2: 0.999
+  lr:
+    name: Piecewise
+    decay_epochs : [3]
+    values : [0.0005, 0.00005]
+    warmup_epoch: 5
+  regularizer:
+    name: L2
+    factor: 3.0e-05
+
+Architecture:
+  model_type: rec
+  algorithm: MixTex
+  in_channels: 1
+  Transform:
+  Backbone:
+    name: SwinTransformer
+    img_size: [500, 400]
+    patch_size: 4
+    num_classes: 
+    embed_dim: 96
+    depth: [2, 2, 18, 2]
+    num_heads: [3, 6, 12, 24]
+    input_channel: 1
+    is_predict: False
+    is_export: False
+  Head:
+    name: MixTexHead
+    pad_value: 0
+    is_export: False
+    decoder_args: # ？？？
+      attn_on_attn: True  # ？？？
+      cross_attend: True  # ？？？
+      ff_glu: True  # ？？？
+      rel_pos_bias: False
+      use_scalenorm: False
+
+Loss:
+  name: MixTexLoss
+
+PostProcess:
+  name: MixTexDecode
+  rec_char_dict_path: ppocr/utils/dict/mixtex_tokenizer.json
+
+Metric:
+  name: MixTexMetric
+  main_indicator:
+  cal_blue_score: True
+
+Train:
+  dataset:
+    name: MixTexDataSet
+    data_dir: 
+    data: 
+    batch_size_per_pair: 24
+    transforms:
+      - DecodeImage:
+        channel_first: False
+      - RecResizeImg:
+        image_shape: [48, 320]
+      - KeepKeys:
+        keep_keys: ['image']
+  loader:
+    shuffle: True
+    batch_size_per_card: 1
+    drop_last: False
+    num_workers: 0
+    collate_fn: MixTexCollator
+
+Eval:
+  dataset:
+    name: MixTexDataSet
+    data_dir: 
+    data:
+    batch_size_per_pair: 24
+    transforms:
+      - DecodeImage:
+        channel_first: False
+      - RecResizeImg:
+        image_shape: [48, 320]
+      - KeepKeys:
+        keep_keys: ['image']
+  loader:
+    shuffle: True
+    batch_size_per_card: 1
+    drop_last: False
+    num_workers: 0
+    collate_fn: MixTexCollator
