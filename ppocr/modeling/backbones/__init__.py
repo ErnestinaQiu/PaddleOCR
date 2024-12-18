@@ -67,6 +67,7 @@ def build_backbone(config, model_type):
         from .rec_vit_parseq import ViTParseQ
         from .rec_repvit import RepSVTR
         from .rec_svtrv2 import SVTRv2
+        from .rec_swin_transformer import SwinTransformer, SwinTransformer_tiny_patch4_window7_224, SwinTransformer_small_patch4_window7_224, SwinTransformer_large_patch4_window7_224, SwinTransformer_large_patch4_window12_384, SwinTransformer_base_patch4_window7_224, SwinTransformer_base_patch4_window12_384
 
         support_dict = [
             "MobileNetV1Enhance",
@@ -93,6 +94,13 @@ def build_backbone(config, model_type):
             "SVTRv2",
             "ResNetV2",
             "HybridTransformer",
+            "SwinTransformer",
+            "SwinTransformer_tiny_patch4_window7_224",
+            "SwinTransformer_small_patch4_window7_224",
+            "SwinTransformer_large_patch4_window7_224",
+            "SwinTransformer_large_patch4_window12_384",
+            "SwinTransformer_base_patch4_window7_224",
+            "SwinTransformer_base_patch4_window12_384",
         ]
     elif model_type == "e2e":
         from .e2e_resnet_vd_pg import ResNet

@@ -46,7 +46,7 @@ class DecodeImage(object):
         else:
             assert (
                 type(img) is bytes and len(img) > 0
-            ), "invalid input 'img' in DecodeImage"
+             ), "invalid input 'img' in DecodeImage"
         img = np.frombuffer(img, dtype="uint8")
         if self.ignore_orientation:
             img = cv2.imdecode(img, cv2.IMREAD_IGNORE_ORIENTATION | cv2.IMREAD_COLOR)

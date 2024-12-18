@@ -52,6 +52,7 @@ def build_head(config):
     from .rec_satrn_head import SATRNHead
     from .rec_parseq_head import ParseQHead
     from .rec_cppd_head import CPPDHead
+    from .rec_roberta_head import RobertHead
 
     # cls head
     from .cls_head import ClsHead
@@ -95,6 +96,7 @@ def build_head(config):
         "PFHeadLocal",
         "ParseQHead",
         "CPPDHead",
+        "RobertHead",
     ]
 
     if config["name"] == "DRRGHead":
@@ -109,4 +111,5 @@ def build_head(config):
         "head only support {}".format(support_dict)
     )
     module_class = eval(module_name)(**config)
+
     return module_class

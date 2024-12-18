@@ -45,7 +45,6 @@ Architecture:
     is_export: False
   Head:
     name: LaTeXOCRHead
-    pad_value: 0
     is_export: False
     decoder_args:
       attn_on_attn: True

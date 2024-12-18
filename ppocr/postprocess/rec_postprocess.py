@@ -1268,41 +1268,19 @@ class MixTexDecode(object):
     """Convert between latex-symbol and symbol-index"""
 
     def __init__(self, rec_char_dict_path, **kwargs):
-        from tokenizers import Tokenizer as TokenizerFast
-
-        super(LaTeXOCRDecode, self).__init__()
-        self.tokenizer = TokenizerFast.from_file(rec_char_dict_path)
-
-    def post_process(self, s):
-        text_reg = r"(\\(operatorname|mathrm|text|mathbf)\s?\*? {.*?})"
-        letter = "[a-zA-Z]"
-        noletter = "[\W_^\d]"
-        names = [x[0].replace(" ", "") for x in re.findall(text_reg, s)]
-        s = re.sub(text_reg, lambda match: str(names.pop(0)), s)
-        news = s
-        while True:
-            s = news
-            news = re.sub(r"(?!\\ )(%s)\s+?(%s)" % (noletter, noletter), r"\1\2", s)
-            news = re.sub(r"(?!\\ )(%s)\s+?(%s)" % (noletter, letter), r"\1\2", news)
-            news = re.sub(r"(%s)\s+?(%s)" % (letter, noletter), r"\1\2", news)
-            if news == s:
-                break
-        return s
+        super(MixTexDecode, self).__init__()
+        from paddlenlp.transformers.roberta.tokenizer import RobertaTokenizer
+        self.tokenizer = RobertaTokenizer.from_pretrained(pretrained_model_name_or_path=rec_char_dict_path)
 
     def decode(self, tokens):
         if len(tokens.shape) == 1:
             tokens = tokens[None, :]
         dec = [self.tokenizer.decode(tok) for tok in tokens]
         dec_str_list = [
-            "".join(detok.split(" "))
-            .replace("Ġ", " ")
-            .replace("[EOS]", "")
-            .replace("[BOS]", "")
-            .replace("[PAD]", "")
-            .strip()
+            detok.replace('\\[','\\begin{align*}').replace('\\]','\\end{align*}')
             for detok in dec
         ]
-        return [self.post_process(dec_str) for dec_str in dec_str_list]
+        return dec_str_list
 
     def __call__(self, preds, label=None, mode="eval", *args, **kwargs):
         if mode == "train":

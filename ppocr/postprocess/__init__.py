@@ -99,7 +99,7 @@ def build_post_process(config, global_config=None):
         "ParseQLabelDecode",
         "CPPDLabelDecode",
         "LaTeXOCRDecode",
-        "MixTexOCRDecode",
+        "MixTexDecode",
     ]
 
     if config["name"] == "PSEPostProcess":

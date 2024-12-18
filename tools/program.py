@@ -845,6 +845,7 @@ def preprocess(is_train=False):
         "ParseQ",
         "CPPD",
         "LaTeXOCR",
+        "MixTex",
     ]
 
     if use_xpu:
@@ -856,6 +857,10 @@ def preprocess(is_train=False):
     else:
         device = "gpu:{}".format(dist.ParallelEnv().dev_id) if use_gpu else "cpu"
     check_device(use_gpu, use_xpu, use_npu, use_mlu)
+
+    ######### debug
+    device = 'cpu'
+    ######### debug
 
     device = paddle.set_device(device)
 

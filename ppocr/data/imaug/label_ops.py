@@ -1853,6 +1853,7 @@ class LatexOCRLabelEncode(object):
             )
             for encoding in encodings
         ]
+
         sanitized_tokens = {}
         for key in tokens_and_encodings[0][0].keys():
             stack = [e for item, _ in tokens_and_encodings for e in item[key]]
@@ -1876,3 +1877,17 @@ class LatexOCRLabelEncode(object):
             np.array(topk["attention_mask"]).astype(np.int64),
             max_length,
         )
+
+
+class MixTexLabelEncode:
+    def __init__(
+        self,
+        rec_char_dict_path,
+        **kwargs,
+    ):
+        from paddlenlp.transformers.roberta.tokenizer import RobertaTokenizer
+        self.tokenizer = RobertaTokenizer.from_pretrained(pretrained_model_name_or_path=rec_char_dict_path)
+
+    def __call__(self, target_text, padding="max_length", max_length=256, truncation=True):
+        target = self.tokenizer(target_text, padding, max_length, truncation).input_ids
+        return target

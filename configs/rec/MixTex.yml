@@ -5,19 +5,21 @@ Global:
   print_batch_step: 10
   save_model_dir: ./output/MixTex
   save_epoch_step: 5
-  max_seq_len: 512
-  # evaluation is run every 60000 iterations (22 epoch)(batch_size = 56)
+  max_seq_len: 256
   eval_batch_step: [0, 5]
   cal_metric_during_train: true
-  pretrained_model: https://paddle-imagenet-models-name.bj.bcebos.com/dygraph/legendary_models/SwinTransformer_tiny_patch4_window7_224_pretrained.pdparams
+  # pretrained_model: https://paddle-imagenet-models-name.bj.bcebos.com/dygraph/legendary_models/SwinTransformer_tiny_patch4_window7_224_pretrained.pdparams
   checkpoints:
   save_inference_dir:
   use_visualdl: false
   infer_img: doc/datasets/pme_demo/0000013.png
   infer_mode: False
   use_space_char: False
-  rec_char_dict_path:  ppocr/utils/dict/mixtex_tokenizer.json
+  rec_char_dict_path:  D:/study/dl/MixTex/PaddleOCR/ppocr/utils/dict/mixtex
+  # rec_char_dict_path: D:/study/dl/MixTex/model
   save_res_path: ./output/rec/predicts_mixtex.txt
+  d2s_train_image_shape: [3, 400, 500]
+
 
 Optimizer:
   name: AdamW
@@ -35,78 +37,105 @@ Optimizer:
 Architecture:
   model_type: rec
   algorithm: MixTex
-  in_channels: 1
+  in_channels: 3
   Transform:
   Backbone:
-    name: SwinTransformer
-    img_size: [500, 400]
+    name: SwinTransformer_tiny_patch4_window7_224
+    img_size: 224
     patch_size: 4
-    num_classes: 
-    embed_dim: 96
-    depth: [2, 2, 18, 2]
-    num_heads: [3, 6, 12, 24]
+    num_classes: 25678           # class num of vob
+    # embed_dim: 96
+    # depths: [2, 2, 18, 2]
+    # num_heads: [3, 6, 12, 24]
     input_channel: 1
     is_predict: False
     is_export: False
   Head:
-    name: MixTexHead
-    pad_value: 0
+    name: RobertHead
+    pad_value: -100
     is_export: False
-    decoder_args: # ？？？
-      attn_on_attn: True  # ？？？
-      cross_attend: True  # ？？？
-      ff_glu: True  # ？？？
+    decoder_args:
+      vocab_size: 25681
+      cross_attend: True
       rel_pos_bias: False
       use_scalenorm: False
+      attention_probs_dropout_prob: 0.1
+      bos_token_id: 0
+      chunk_size_feed_forward: 0
+      diversity_penalty: 0.0
+      do_sample: False
+      eos_token_id: 2
+      hidden_act: gelu
+      hidden_dropout_prob: 0.1
+      hidden_size: 768
+      max_length: 20
+      # max_position_embeddings: 300
+      max_position_embeddings: 3000
+      min_length: 0
+      num_attention_heads: 12
+      num_hidden_layers: 4
+      pad_token_id: 1
+      temperature: 1.0
+      tie_word_embeddings: True
+      top_k: 50
+      top_p: 1.0
+      intermediate_size: 3072
+      type_vocab_size: 1
+      initializer_range: 0.02
+
 
 Loss:
-  name: MixTexLoss
+  name: LaTeXOCRLoss
 
 PostProcess:
   name: MixTexDecode
-  rec_char_dict_path: ppocr/utils/dict/mixtex_tokenizer.json
+  rec_char_dict_path: D:/study/dl/MixTex/PaddleOCR/ppocr/utils/dict/mixtex
+  # rec_char_dict_path: D:/study/dl/MixTex/model
 
 Metric:
-  name: MixTexMetric
-  main_indicator:
+  name: LaTeXOCRMetric
+  main_indicator: acc
   cal_blue_score: True
 
 Train:
   dataset:
     name: MixTexDataSet
-    data_dir: 
-    data: 
+    data_dir: ./data/Pseudo-Latext-ZhEn
     batch_size_per_pair: 24
     transforms:
-      - DecodeImage:
-        channel_first: False
-      - RecResizeImg:
-        image_shape: [48, 320]
-      - KeepKeys:
+    # - DecodeImage:
+    #     channel_first: False
+    - RecResizeImg:
+        image_shape: [3, 400, 500]
+    - RescaleImage:
+        scale: 0.00392156862745098
+    - KeepKeys:
         keep_keys: ['image']
   loader:
     shuffle: True
     batch_size_per_card: 1
     drop_last: False
     num_workers: 0
-    collate_fn: MixTexCollator
+    # collate_fn: MixTexCollator
 
 Eval:
   dataset:
     name: MixTexDataSet
-    data_dir: 
+    data_dir: ./data/Pseudo-Latext-ZhEn
     data:
     batch_size_per_pair: 24
     transforms:
-      - DecodeImage:
-        channel_first: False
-      - RecResizeImg:
-        image_shape: [48, 320]
-      - KeepKeys:
+    # - DecodeImage:
+    #     channel_first: False
+    - RecResizeImg:
+        image_shape: [3, 400, 500]
+    - RescaleImage:
+        scale: 0.00392156862745098
+    - KeepKeys:
         keep_keys: ['image']
   loader:
     shuffle: True
     batch_size_per_card: 1
     drop_last: False
     num_workers: 0
-    collate_fn: MixTexCollator
+    # collate_fn: MixTexCollator

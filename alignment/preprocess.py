@@ -19,5 +19,3 @@ def test_preprocess():
     origin_img = np.load(origin_img_path)
 
     assert (np.array_equal(img, origin_img))
-
-    # 
